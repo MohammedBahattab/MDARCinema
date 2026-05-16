@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -29,7 +29,11 @@ namespace MDARCinema.UserControls
                     User = b.user != null ? b.user.name : "Guest",
                     Movie = b.showtime.movy.title,
                     Hall = b.showtime.hall.name,
-                    Seats = string.Join(", ", b.booking_seats.Select(bs => "R" + bs.seat.row_number + "-S" + bs.seat.seat_number)),
+                    Seats = string.Join(", ", b.booking_seats.Select(bs =>
+                    {
+                        char rowLetter = (char)('A' + (bs.seat.row_number - 1));
+                        return rowLetter + bs.seat.seat_number.ToString();
+                    })),
                     TotalAmount = b.booking_seats.Sum(bs => (decimal?)bs.price) ?? 0,
                     State = b.status,
                     b.created_at
@@ -76,7 +80,7 @@ namespace MDARCinema.UserControls
 
         private void cmbShowtime_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (selectedId == 0) // Only auto-load when adding new
+            if (selectedId == 0)
                 LoadAvailableSeats();
         }
 
@@ -97,7 +101,13 @@ namespace MDARCinema.UserControls
                 {
                     if (!bookedSeatIds.Contains(seat.id))
                     {
-                        clbSeats.Items.Add(new SeatItem { Id = seat.id, Display = "Row " + seat.row_number + " - Seat " + seat.seat_number }, false);
+                        char rowLetter = (char)('A' + (seat.row_number - 1));
+
+                        clbSeats.Items.Add(new SeatItem
+                        {
+                            Id = seat.id,
+                            Display = rowLetter + seat.seat_number.ToString()
+                        }, false);
                     }
                 }
                 clbSeats.DisplayMember = "Display";
@@ -173,11 +183,9 @@ namespace MDARCinema.UserControls
                     bk.status = cmbStatus.SelectedItem?.ToString() ?? "pending";
                     bk.updated_at = DateTime.Now;
 
-                    // Remove old seats
                     var oldSeats = db.booking_seats.Where(bs => bs.booking_id == bk.id).ToList();
                     foreach (var os in oldSeats) db.booking_seats.Remove(os);
 
-                    // Add new seats
                     foreach (SeatItem item in clbSeats.CheckedItems)
                     {
                         db.booking_seats.Add(new booking_seats
@@ -237,7 +245,11 @@ namespace MDARCinema.UserControls
                     User = b.user != null ? b.user.name : "Guest",
                     Movie = b.showtime.movy.title,
                     Hall = b.showtime.hall.name,
-                    Seats = string.Join(", ", b.booking_seats.Select(bs => "R" + bs.seat.row_number + "-S" + bs.seat.seat_number)),
+                    Seats = string.Join(", ", b.booking_seats.Select(bs =>
+                    {
+                        char rowLetter = (char)('A' + (bs.seat.row_number - 1));
+                        return rowLetter + bs.seat.seat_number.ToString();
+                    })),
                     TotalAmount = b.booking_seats.Sum(bs => (decimal?)bs.price) ?? 0,
                     State = b.status,
                     b.created_at
@@ -254,16 +266,16 @@ namespace MDARCinema.UserControls
             {
                 var row = dgvData.Rows[e.RowIndex];
                 selectedId = Convert.ToInt64(row.Cells["id"].Value);
-                
+
                 var bk = db.bookings.Find(selectedId);
                 if (bk != null)
                 {
                     cmbUser.SelectedValue = bk.user_id;
                     cmbShowtime.SelectedValue = bk.showtime_id;
                     cmbStatus.SelectedItem = bk.status;
-                    
+
                     LoadAvailableSeats();
-                    // Mark already booked seats for this booking
+
                     for (int i = 0; i < clbSeats.Items.Count; i++)
                     {
                         var item = (SeatItem)clbSeats.Items[i];
@@ -294,23 +306,19 @@ namespace MDARCinema.UserControls
                 Brush brush = Brushes.Black;
                 float x = 50, y = 50;
 
-                // Title
                 g.DrawString("MDAR CINEMA - INVOICE", titleFont, brush, x, y);
                 y += 50;
                 g.DrawLine(Pens.Black, x, y, 750, y);
                 y += 20;
 
-                // Booking Info
                 g.DrawString("Booking ID: " + bk.id, headerFont, brush, x, y);
                 y += 25;
                 g.DrawString("Date: " + DateTime.Now.ToString("g"), bodyFont, brush, x, y);
                 y += 40;
 
-                // Customer Info
                 g.DrawString("Customer: " + (bk.user != null ? bk.user.name : "Guest"), bodyFont, brush, x, y);
                 y += 25;
 
-                // Movie Info
                 g.DrawString("Movie: " + bk.showtime.movy.title, headerFont, brush, x, y);
                 y += 25;
                 g.DrawString("Hall: " + bk.showtime.hall.name, bodyFont, brush, x, y);
@@ -318,21 +326,24 @@ namespace MDARCinema.UserControls
                 g.DrawString("Showtime: " + bk.showtime.show_date.ToShortDateString() + " " + bk.showtime.start_time, bodyFont, brush, x, y);
                 y += 40;
 
-                // Seats
                 g.DrawString("SEATS:", headerFont, brush, x, y);
                 y += 25;
-                string seatsStr = string.Join(", ", bk.booking_seats.Select(bs => "Row " + bs.seat.row_number + " Seat " + bs.seat.seat_number));
+
+                string seatsStr = string.Join(", ", bk.booking_seats.Select(bs =>
+                {
+                    char rowLetter = (char)('A' + (bs.seat.row_number - 1));
+                    return rowLetter + bs.seat.seat_number.ToString();
+                }));
+
                 g.DrawString(seatsStr, bodyFont, brush, x, y);
                 y += 50;
 
-                // Pricing
                 decimal total = bk.booking_seats.Sum(bs => (decimal?)bs.price) ?? 0;
                 g.DrawLine(Pens.Gray, x, y, 750, y);
                 y += 10;
                 g.DrawString("TOTAL AMOUNT: " + total.ToString("C"), titleFont, Brushes.DarkRed, x, y);
                 y += 60;
 
-                // Footer
                 g.DrawString("Thank you for choosing MDAR Cinema!", bodyFont, brush, x, y);
                 y += 20;
                 g.DrawString("Please present this invoice at the entrance.", bodyFont, Brushes.Gray, x, y);
