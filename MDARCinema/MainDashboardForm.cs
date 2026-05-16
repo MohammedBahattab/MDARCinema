@@ -11,7 +11,7 @@ namespace MDARCinema
     {
         private Button _activeButton = null;
         private readonly Color _sidebarColor = Color.FromArgb(30, 30, 46);
-        private readonly Color _activeColor = Color.FromArgb(100, 65, 165);
+        private readonly Color _activeColor = Color.FromArgb(220, 53, 69);
         private readonly Color _hoverColor = Color.FromArgb(55, 55, 75);
 
         public MainDashboardForm()

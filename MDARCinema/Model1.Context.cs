@@ -48,7 +48,6 @@ namespace MDARCinema
         public DbSet<session> sessions { get; set; }
         public DbSet<showtime> showtimes { get; set; }
         public DbSet<studio> studios { get; set; }
-        public DbSet<sysdiagram> sysdiagrams { get; set; }
         public DbSet<user> users { get; set; }
     }
 }
