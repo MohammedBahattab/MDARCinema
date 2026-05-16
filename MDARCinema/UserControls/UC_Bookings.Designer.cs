@@ -28,17 +28,22 @@ namespace MDARCinema.UserControls
             this.btnEdit = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
             this.btnClear = new System.Windows.Forms.Button();
+            this.btnPrint = new System.Windows.Forms.Button();
+            this.clbSeats = new System.Windows.Forms.CheckedListBox();
+            this.lblSeats = new System.Windows.Forms.Label();
             this.dgvData = new System.Windows.Forms.DataGridView();
             this.txtSearch = new System.Windows.Forms.TextBox();
             this.lblSearch = new System.Windows.Forms.Label();
             this.lblRecordCount = new System.Windows.Forms.Label();
+            this.printDocument1 = new System.Drawing.Printing.PrintDocument();
+            this.printPreviewDialog1 = new System.Windows.Forms.PrintPreviewDialog();
             ((System.ComponentModel.ISupportInitialize)(this.dgvData)).BeginInit();
             this.SuspendLayout();
             // pnlForm
             this.pnlForm.BackColor = System.Drawing.Color.White;
             this.pnlForm.Location = new System.Drawing.Point(15, 15);
             this.pnlForm.Name = "pnlForm";
-            this.pnlForm.Size = new System.Drawing.Size(930, 160);
+            this.pnlForm.Size = new System.Drawing.Size(930, 250);
             // lblUser
             this.lblUser.AutoSize = true;
             this.lblUser.Font = new System.Drawing.Font("Segoe UI", 9F);
@@ -116,23 +121,47 @@ namespace MDARCinema.UserControls
             this.btnClear.Size = new System.Drawing.Size(100, 35);
             this.btnClear.Text = "🔄 Clear";
             this.btnClear.Click += new System.EventHandler(this.btnClear_Click);
+            // btnPrint
+            this.btnPrint.BackColor = System.Drawing.Color.FromArgb(52, 73, 94);
+            this.btnPrint.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnPrint.FlatAppearance.BorderSize = 0;
+            this.btnPrint.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnPrint.Font = new System.Drawing.Font("Segoe UI", 9.5F, System.Drawing.FontStyle.Bold);
+            this.btnPrint.ForeColor = System.Drawing.Color.White;
+            this.btnPrint.Location = new System.Drawing.Point(470, 90);
+            this.btnPrint.Size = new System.Drawing.Size(100, 35);
+            this.btnPrint.Text = "🖨️ Print";
+            this.btnPrint.Click += new System.EventHandler(this.btnPrint_Click);
+            // clbSeats
+            this.clbSeats.CheckOnClick = true;
+            this.clbSeats.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.clbSeats.FormattingEnabled = true;
+            this.clbSeats.Location = new System.Drawing.Point(30, 140);
+            this.clbSeats.Name = "clbSeats";
+            this.clbSeats.Size = new System.Drawing.Size(860, 94);
+            // lblSeats
+            this.lblSeats.AutoSize = true;
+            this.lblSeats.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblSeats.ForeColor = System.Drawing.Color.FromArgb(80, 80, 100);
+            this.lblSeats.Location = new System.Drawing.Point(30, 122);
+            this.lblSeats.Text = "Available Seats:";
             // lblSearch
             this.lblSearch.AutoSize = true;
             this.lblSearch.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblSearch.ForeColor = System.Drawing.Color.FromArgb(80, 80, 100);
-            this.lblSearch.Location = new System.Drawing.Point(15, 190);
+            this.lblSearch.Location = new System.Drawing.Point(15, 280);
             this.lblSearch.Text = "🔍 Search:";
             // txtSearch
             this.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtSearch.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtSearch.Location = new System.Drawing.Point(85, 187);
+            this.txtSearch.Location = new System.Drawing.Point(85, 277);
             this.txtSearch.Size = new System.Drawing.Size(300, 25);
             this.txtSearch.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
             // lblRecordCount
             this.lblRecordCount.AutoSize = true;
             this.lblRecordCount.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Italic);
             this.lblRecordCount.ForeColor = System.Drawing.Color.FromArgb(120, 120, 140);
-            this.lblRecordCount.Location = new System.Drawing.Point(830, 190);
+            this.lblRecordCount.Location = new System.Drawing.Point(830, 280);
             this.lblRecordCount.Text = "Total: 0 records";
             // dgvData styles
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(46, 204, 113);
@@ -159,16 +188,19 @@ namespace MDARCinema.UserControls
             this.dgvData.DefaultCellStyle = dataGridViewCellStyle2;
             this.dgvData.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle3;
             this.dgvData.EnableHeadersVisualStyles = false;
-            this.dgvData.GridColor = System.Drawing.Color.FromArgb(235, 235, 240);
-            this.dgvData.Location = new System.Drawing.Point(15, 220);
-            this.dgvData.MultiSelect = false;
-            this.dgvData.Name = "dgvData";
-            this.dgvData.ReadOnly = true;
-            this.dgvData.RowHeadersVisible = false;
-            this.dgvData.RowTemplate.Height = 32;
-            this.dgvData.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvData.Size = new System.Drawing.Size(930, 370);
+            this.dgvData.Location = new System.Drawing.Point(15, 310);
+            this.dgvData.Size = new System.Drawing.Size(930, 280);
             this.dgvData.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvData_CellClick);
+            // printDocument1
+            this.printDocument1.PrintPage += new System.Drawing.Printing.PrintPageEventHandler(this.printDocument1_PrintPage);
+            // printPreviewDialog1
+            this.printPreviewDialog1.AutoScrollMargin = new System.Drawing.Size(0, 0);
+            this.printPreviewDialog1.AutoScrollMinSize = new System.Drawing.Size(0, 0);
+            this.printPreviewDialog1.ClientSize = new System.Drawing.Size(400, 300);
+            this.printPreviewDialog1.Document = this.printDocument1;
+            this.printPreviewDialog1.Enabled = true;
+            this.printPreviewDialog1.Name = "printPreviewDialog1";
+            this.printPreviewDialog1.Visible = false;
             // pnlForm controls
             this.pnlForm.Controls.Add(this.lblUser);
             this.pnlForm.Controls.Add(this.cmbUser);
@@ -180,6 +212,9 @@ namespace MDARCinema.UserControls
             this.pnlForm.Controls.Add(this.btnEdit);
             this.pnlForm.Controls.Add(this.btnDelete);
             this.pnlForm.Controls.Add(this.btnClear);
+            this.pnlForm.Controls.Add(this.btnPrint);
+            this.pnlForm.Controls.Add(this.clbSeats);
+            this.pnlForm.Controls.Add(this.lblSeats);
             // UC_Bookings
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -208,9 +243,14 @@ namespace MDARCinema.UserControls
         private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.Button btnDelete;
         private System.Windows.Forms.Button btnClear;
+        private System.Windows.Forms.Button btnPrint;
+        private System.Windows.Forms.CheckedListBox clbSeats;
+        private System.Windows.Forms.Label lblSeats;
         private System.Windows.Forms.DataGridView dgvData;
         private System.Windows.Forms.TextBox txtSearch;
         private System.Windows.Forms.Label lblSearch;
         private System.Windows.Forms.Label lblRecordCount;
+        private System.Drawing.Printing.PrintDocument printDocument1;
+        private System.Windows.Forms.PrintPreviewDialog printPreviewDialog1;
     }
 }

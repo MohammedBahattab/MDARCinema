@@ -215,6 +215,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="UserControls\UC_Bookings.resx">
+      <DependentUpon>UC_Bookings.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UserControls\UC_Movies.resx">
       <DependentUpon>UC_Movies.cs</DependentUpon>
     </EmbeddedResource>

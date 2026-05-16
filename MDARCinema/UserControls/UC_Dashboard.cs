@@ -27,18 +27,20 @@ namespace MDARCinema.UserControls
                     lblCategoriesCount.Text = db.categories.Count().ToString();
 
                     // Load recent bookings
-                    var recentBookings = db.bookings
+                    var bookingsList = db.bookings
                         .OrderByDescending(b => b.created_at)
                         .Take(10)
-                        .Select(b => new
-                        {
-                            ID = b.id,
-                            User = b.user != null ? b.user.name : "Guest",
-                            Movie = b.showtime.movy.title,
-                            Date = b.showtime.show_date,
-                            Status = b.status,
-                            Created = b.created_at
-                        }).ToList();
+                        .ToList();
+                    var recentBookings = bookingsList.Select(b => new
+                    {
+                        ID = b.id,
+                        User = b.user != null ? b.user.name : "Guest",
+                        Movie = b.showtime.movy.title,
+                        Hall = b.showtime.hall.name,
+                        Seats = string.Join(", ", b.booking_seats.Select(bs => "R" + bs.seat.row_number + "-S" + bs.seat.seat_number)),
+                        Status = b.status,
+                        Created = b.created_at
+                    }).ToList();
                     dgvRecentBookings.DataSource = recentBookings;
 
                     // Load upcoming showtimes
