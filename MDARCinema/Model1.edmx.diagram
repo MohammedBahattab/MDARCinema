@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="78f2dbc5b84146889ecf40e9eafc6f19" Name="Diagram1" ZoomLevel="64">
+        <EntityTypeShape EntityType="CinemaBookingDBModel.booking_seats" Width="1.5" PointX="5.25" PointY="5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.booking" Width="1.5" PointX="5.25" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.cache" Width="1.5" PointX="7.75" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.cache_locks" Width="1.5" PointX="9.75" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.category" Width="1.5" PointX="1.75" PointY="22.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.crew" Width="1.5" PointX="4.75" PointY="23.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.crew_roles" Width="1.5" PointX="4.75" PointY="26.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.failed_jobs" Width="1.5" PointX="9.75" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.guest_users" Width="1.5" PointX="3" PointY="8.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.hall" Width="1.5" PointX="0.75" PointY="5.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.job_batches" Width="1.5" PointX="9.75" PointY="9.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.job" Width="1.5" PointX="11.75" PointY="2.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.migration" Width="1.5" PointX="11.75" PointY="6.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.movie_category" Width="1.5" PointX="4" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.movie_crew" Width="1.5" PointX="7" PointY="10.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.movy" Width="1.5" PointX="0.75" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.password_reset_tokens" Width="1.5" PointX="11.75" PointY="9.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.payment" Width="1.5" PointX="7.5" PointY="6" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.role" Width="1.5" PointX="0.75" PointY="19" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.seat" Width="1.5" PointX="3" PointY="5.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.session" Width="1.5" PointX="9.75" PointY="13.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.showtime" Width="1.5" PointX="3" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.studio" Width="1.5" PointX="1.5" PointY="14.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.sysdiagram" Width="1.5" PointX="11.75" PointY="12.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CinemaBookingDBModel.user" Width="1.5" PointX="3" PointY="18.125" IsExpanded="true" />
+        <AssociationConnector Association="CinemaBookingDBModel.booking_seats_booking_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.booking_seats_seat_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.booking_seats_showtime_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.bookings_guest_user_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.bookings_showtime_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.bookings_user_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.payments_booking_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.movie_category_category_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.movie_crew_crew_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.movie_crew_crew_role_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.seats_hall_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.showtimes_hall_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.movie_category_movie_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.movie_crew_movie_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.movies_studio_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.showtimes_movie_id_foreign" ManuallyRouted="false" />
+        <AssociationConnector Association="CinemaBookingDBModel.users_role_id_foreign" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
