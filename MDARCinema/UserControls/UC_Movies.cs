@@ -22,6 +22,7 @@ namespace MDARCinema.UserControls
 
             LoadData();
             LoadStudios();
+            LoadCategories();
         }
 
         private void LoadData()
@@ -76,6 +77,35 @@ namespace MDARCinema.UserControls
             }
         }
 
+        private void LoadCategories()
+        {
+            try
+            {
+                clbCategories.Items.Clear();
+
+                var categories =
+                    db.categories.ToList();
+
+                foreach (var cat in categories)
+                {
+                    clbCategories.Items.Add(
+                        cat,
+                        false
+                    );
+                }
+
+                clbCategories.DisplayMember =
+                    "name";
+
+                clbCategories.ValueMember =
+                    "id";
+            }
+            catch
+            {
+
+            }
+        }
+
         private void ClearFields()
         {
             txtTitle.Clear();
@@ -84,11 +114,24 @@ namespace MDARCinema.UserControls
             txtLanguage.Clear();
             txtRating.Clear();
 
-            dtpReleaseDate.Value = DateTime.Now;
+            dtpReleaseDate.Value =
+                DateTime.Now;
 
             cmbStudio.SelectedIndex = -1;
 
             picPoster.Image = null;
+
+            for (
+                int i = 0;
+                i < clbCategories.Items.Count;
+                i++
+            )
+            {
+                clbCategories.SetItemChecked(
+                    i,
+                    false
+                );
+            }
 
             selectedId = 0;
             posterPath = "";
@@ -99,52 +142,60 @@ namespace MDARCinema.UserControls
             EventArgs e
         )
         {
-            OpenFileDialog ofd = new OpenFileDialog();
+            OpenFileDialog ofd =
+                new OpenFileDialog();
 
             ofd.Filter =
                 "Image Files|*.jpg;*.jpeg;*.png;*.bmp";
 
-            if (ofd.ShowDialog() == DialogResult.OK)
+            if (
+                ofd.ShowDialog() ==
+                DialogResult.OK
+            )
             {
                 try
                 {
-                    // مسار صور الويب
                     string moviesFolder =
                         @"D:\my\مشاريع داؤد احمد\MDAR_CINEMA\storage\app\public\movies";
 
-                    if (!Directory.Exists(moviesFolder))
+                    if (
+                        !Directory.Exists(
+                            moviesFolder
+                        )
+                    )
                     {
                         Directory.CreateDirectory(
                             moviesFolder
                         );
                     }
 
-                    // اسم عشوائي للصورة
                     string fileName =
                         Guid.NewGuid().ToString() +
-                        Path.GetExtension(ofd.FileName);
+                        Path.GetExtension(
+                            ofd.FileName
+                        );
 
-                    // المسار الكامل
                     string destinationPath =
                         Path.Combine(
                             moviesFolder,
                             fileName
                         );
 
-                    // نسخ الصورة
                     File.Copy(
                         ofd.FileName,
                         destinationPath,
                         true
                     );
 
-                    // المسار الذي يتخزن في قاعدة البيانات
                     posterPath =
                         "movies/" + fileName;
 
-                    // عرض الصورة
-                    using (var img =
-                        Image.FromFile(destinationPath))
+                    using (
+                        var img =
+                            Image.FromFile(
+                                destinationPath
+                            )
+                    )
                     {
                         picPoster.Image =
                             new Bitmap(img);
@@ -168,8 +219,11 @@ namespace MDARCinema.UserControls
             EventArgs e
         )
         {
-            if (string.IsNullOrWhiteSpace(
-                txtTitle.Text))
+            if (
+                string.IsNullOrWhiteSpace(
+                    txtTitle.Text
+                )
+            )
             {
                 MessageBox.Show(
                     "Please enter movie title!",
@@ -185,7 +239,8 @@ namespace MDARCinema.UserControls
             {
                 var movie = new movy
                 {
-                    title = txtTitle.Text.Trim(),
+                    title =
+                        txtTitle.Text.Trim(),
 
                     description =
                         txtDescription.Text.Trim(),
@@ -208,19 +263,48 @@ namespace MDARCinema.UserControls
                         txtRating.Text.Trim(),
 
                     studio_id =
-                        cmbStudio.SelectedValue != null
+                        cmbStudio.SelectedValue !=
+                        null
                         ? (long?)Convert.ToInt64(
                             cmbStudio.SelectedValue
                         )
                         : null,
 
-                    poster_image = posterPath,
+                    poster_image =
+                        posterPath,
 
-                    created_at = DateTime.Now,
-                    updated_at = DateTime.Now
+                    created_at =
+                        DateTime.Now,
+
+                    updated_at =
+                        DateTime.Now
                 };
 
                 db.movies.Add(movie);
+
+                db.SaveChanges();
+
+                // حفظ التصنيفات
+                foreach (
+                    var item in
+                    clbCategories.CheckedItems
+                )
+                {
+                    category cat =
+                        (category)item;
+
+                    movie_category mc =
+                        new movie_category
+                        {
+                            movie_id =
+                                movie.id,
+
+                            category_id =
+                                cat.id
+                        };
+
+                    db.movie_category.Add(mc);
+                }
 
                 db.SaveChanges();
 
@@ -262,7 +346,9 @@ namespace MDARCinema.UserControls
             try
             {
                 var movie =
-                    db.movies.Find(selectedId);
+                    db.movies.Find(
+                        selectedId
+                    );
 
                 if (movie != null)
                 {
@@ -290,7 +376,8 @@ namespace MDARCinema.UserControls
                         txtRating.Text.Trim();
 
                     movie.studio_id =
-                        cmbStudio.SelectedValue != null
+                        cmbStudio.SelectedValue !=
+                        null
                         ? (long?)Convert.ToInt64(
                             cmbStudio.SelectedValue
                         )
@@ -301,6 +388,45 @@ namespace MDARCinema.UserControls
 
                     movie.updated_at =
                         DateTime.Now;
+
+                    // حذف التصنيفات القديمة
+                    var oldCategories =
+                        db.movie_category
+                        .Where(x =>
+                            x.movie_id == movie.id
+                        )
+                        .ToList();
+
+                    foreach (var item in oldCategories)
+                    {
+                        db.movie_category.Remove(item);
+                    }
+
+                    db.SaveChanges();
+
+                    // إضافة التصنيفات الجديدة
+                    foreach (
+                        var item in
+                        clbCategories.CheckedItems
+                    )
+                    {
+                        category cat =
+                            (category)item;
+
+                        movie_category mc =
+                            new movie_category
+                            {
+                                movie_id =
+                                    movie.id,
+
+                                category_id =
+                                    cat.id
+                            };
+
+                        db.movie_category.Add(
+                            mc
+                        );
+                    }
 
                     db.SaveChanges();
 
@@ -352,7 +478,9 @@ namespace MDARCinema.UserControls
                 try
                 {
                     var movie =
-                        db.movies.Find(selectedId);
+                        db.movies.Find(
+                            selectedId
+                        );
 
                     if (movie != null)
                     {
@@ -407,11 +535,15 @@ namespace MDARCinema.UserControls
                         (
                             m.title
                                 .ToLower()
-                                .Contains(search)
+                                .Contains(
+                                    search
+                                )
                             ||
                             m.language
                                 .ToLower()
-                                .Contains(search)
+                                .Contains(
+                                    search
+                                )
                         )
                     )
                     .Select(m => new
@@ -424,16 +556,19 @@ namespace MDARCinema.UserControls
                         m.language,
                         m.rating,
                         m.poster_image,
-                        Studio = m.studio != null
+                        Studio =
+                            m.studio != null
                             ? m.studio.name
                             : ""
                     })
                     .ToList();
 
-                dgvData.DataSource = data;
+                dgvData.DataSource =
+                    data;
 
                 lblRecordCount.Text =
-                    "Total: " + data.Count +
+                    "Total: " +
+                    data.Count +
                     " records";
             }
             catch
@@ -454,48 +589,67 @@ namespace MDARCinema.UserControls
 
                 selectedId =
                     Convert.ToInt64(
-                        row.Cells["id"].Value
+                        row.Cells["id"]
+                        .Value
                     );
 
                 txtTitle.Text =
-                    row.Cells["title"].Value
+                    row.Cells["title"]
+                    .Value
                     ?.ToString() ?? "";
 
                 txtDescription.Text =
-                    row.Cells["description"].Value
+                    row.Cells["description"]
+                    .Value
                     ?.ToString() ?? "";
 
                 txtDuration.Text =
-                    row.Cells["duration_minutes"].Value
+                    row.Cells["duration_minutes"]
+                    .Value
                     ?.ToString() ?? "";
 
                 txtLanguage.Text =
-                    row.Cells["language"].Value
+                    row.Cells["language"]
+                    .Value
                     ?.ToString() ?? "";
 
                 txtRating.Text =
-                    row.Cells["rating"].Value
+                    row.Cells["rating"]
+                    .Value
                     ?.ToString() ?? "";
 
-                // تاريخ الإصدار
                 if (
-                    row.Cells["release_date"].Value != null &&
-                    row.Cells["release_date"].Value != DBNull.Value
+                    row.Cells[
+                        "release_date"
+                    ].Value != null &&
+                    row.Cells[
+                        "release_date"
+                    ].Value != DBNull.Value
                 )
                 {
                     dtpReleaseDate.Value =
                         Convert.ToDateTime(
-                            row.Cells["release_date"].Value
+                            row.Cells[
+                                "release_date"
+                            ].Value
                         );
                 }
 
                 // البوستر
                 posterPath =
-                    row.Cells["poster_image"].Value != null
-                    ? row.Cells["poster_image"].Value.ToString()
+                    row.Cells[
+                        "poster_image"
+                    ].Value != null
+                    ? row.Cells[
+                        "poster_image"
+                    ].Value.ToString()
                     : "";
 
-                if (!string.IsNullOrEmpty(posterPath))
+                if (
+                    !string.IsNullOrEmpty(
+                        posterPath
+                    )
+                )
                 {
                     try
                     {
@@ -510,13 +664,23 @@ namespace MDARCinema.UserControls
                                 fileName
                             );
 
-                        if (File.Exists(fullPath))
+                        if (
+                            File.Exists(
+                                fullPath
+                            )
+                        )
                         {
-                            using (var img =
-                                Image.FromFile(fullPath))
+                            using (
+                                var img =
+                                    Image.FromFile(
+                                        fullPath
+                                    )
+                            )
                             {
                                 picPoster.Image =
-                                    new Bitmap(img);
+                                    new Bitmap(
+                                        img
+                                    );
                             }
 
                             picPoster.SizeMode =
@@ -524,12 +688,14 @@ namespace MDARCinema.UserControls
                         }
                         else
                         {
-                            picPoster.Image = null;
+                            picPoster.Image =
+                                null;
                         }
                     }
                     catch
                     {
-                        picPoster.Image = null;
+                        picPoster.Image =
+                            null;
                     }
                 }
                 else
@@ -537,24 +703,83 @@ namespace MDARCinema.UserControls
                     picPoster.Image = null;
                 }
 
-                // اختيار الاستوديو
+                // الاستوديو
                 string studioName =
-                    row.Cells["Studio"].Value
+                    row.Cells["Studio"]
+                    .Value
                     ?.ToString() ?? "";
 
                 for (
                     int i = 0;
-                    i < cmbStudio.Items.Count;
+                    i <
+                    cmbStudio.Items.Count;
                     i++
                 )
                 {
                     if (
-                        ((studio)cmbStudio.Items[i]).name
-                        == studioName
+                        (
+                            (
+                                studio
+                            )
+                            cmbStudio.Items[i]
+                        ).name ==
+                        studioName
                     )
                     {
-                        cmbStudio.SelectedIndex = i;
+                        cmbStudio.SelectedIndex =
+                            i;
+
                         break;
+                    }
+                }
+
+                // التصنيفات
+                for (
+                    int i = 0;
+                    i <
+                    clbCategories.Items.Count;
+                    i++
+                )
+                {
+                    clbCategories
+                        .SetItemChecked(
+                            i,
+                            false
+                        );
+                }
+
+                var selectedCategories =
+                    db.movie_category
+                    .Where(x =>
+                        x.movie_id ==
+                        selectedId
+                    )
+                    .Select(x =>
+                        x.category_id
+                    )
+                    .ToList();
+
+                for (
+                    int i = 0;
+                    i <
+                    clbCategories.Items.Count;
+                    i++
+                )
+                {
+                    category cat =
+                        (category)
+                        clbCategories.Items[i];
+
+                    if (
+                        selectedCategories
+                        .Contains(cat.id)
+                    )
+                    {
+                        clbCategories
+                            .SetItemChecked(
+                                i,
+                                true
+                            );
                     }
                 }
             }
